@@ -45,3 +45,35 @@ class PINN(nn.Module):
                 nn.init.xavier_uniform_(layer.weight)
                 if layer.bias is not None:
                     nn.init.zeros_(layer.bias)
+
+# Modelo para equação da onda 2D
+class PINN2D(nn.Module):
+    """PINN para equação da onda 2D"""
+    
+    def __init__(self, layers=[3, 50, 50, 50, 50, 1], activation='tanh'):
+        super(PINN2D, self).__init__()
+        
+        self.layers = nn.ModuleList()
+        for i in range(len(layers)-1):
+            self.layers.append(nn.Linear(layers[i], layers[i+1]))
+        
+        # Função de ativação
+        if activation == 'tanh':
+            self.activation = torch.tanh
+        elif activation == 'sin':
+            self.activation = torch.sin
+        else:
+            self.activation = torch.tanh
+    
+    def forward(self, x, y, t):
+        # Concatenar entradas: [x, y, t]
+        inputs = torch.cat([x, y, t], dim=1)
+        
+        # Forward pass através das camadas
+        for i, layer in enumerate(self.layers[:-1]):
+            inputs = self.activation(layer(inputs))
+        
+        # Camada final (linear)
+        output = self.layers[-1](inputs)
+        
+        return output
