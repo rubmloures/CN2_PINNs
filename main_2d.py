@@ -6,13 +6,13 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src_2')))
 
 try:
-    # Importa os módulos específicos do 2D
-    from trainer import run_training
-    from utils import setup_device
-    from visualization import plot_wave_snapshots_2d, plot_loss_history
+    # Importa os módulos do pacote src_2 
+    from src_2.trainer import run_training
+    from src_2.utils import setup_device
+    from src_2.visualization import plot_wave_snapshots_2d, plot_loss_history
     import config.config_2d_variavel as config_2d
 except ImportError as e:
-    print(f"Erro ao importar módulos do 'src_2'. Verifique a estrutura de pastas.")
+    print("Erro ao importar módulos; execute este script a partir da raiz do repositório ou ajuste PYTHONPATH.")
     print(f"Detalhe do erro: {e}")
     sys.exit(1)
 

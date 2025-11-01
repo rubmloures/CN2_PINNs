@@ -21,10 +21,19 @@ def setup_device(config):
         return torch.device("cpu")
     return torch.device(config.DEVICE)
 
-def save_model(model, config):
-    """Salva os pesos do modelo."""
-    os.makedirs(os.path.dirname(config.MODEL_PATH), exist_ok=True)
-    torch.save(model.state_dict(), config.MODEL_PATH)
+def save_model(model, config, suffix: str = None):
+    """Salva os pesos do modelo.
+
+    Se `suffix` for fornecido, insere antes da extensão do arquivo.
+    """
+    model_dir = os.path.dirname(config.MODEL_PATH)
+    os.makedirs(model_dir, exist_ok=True)
+    save_path = config.MODEL_PATH
+    if suffix:
+        base, ext = os.path.splitext(config.MODEL_PATH)
+        save_path = f"{base}_{suffix}{ext}"
+    torch.save(model.state_dict(), save_path)
+    print(f"Modelo salvo em: {save_path}")
 
 def load_model(model_class, config, device):
     """Carrega um modelo treinado."""

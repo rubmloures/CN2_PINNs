@@ -71,22 +71,33 @@ def run_training(config):
     print(f"Iniciando treinamento para o modelo: {config.MODEL_TYPE}")
     print(f"Dispositivo: {device}")
     
+    ckpt_every = getattr(config, 'CKPT_EVERY', 500)
     pbar = tqdm(range(config.EPOCHS), desc="Treinando")
     for epoch in pbar:
         model.train()
-        
+        # Gera novos dados de treino (sample collocation / IC / BC)
         data = get_training_data(config, device)
-        
+
         optimizer.zero_grad()
-        total_loss, loss_pde, loss_ic, loss_bc = compute_loss(model, data, config, device)
+        try:
+            total_loss, loss_pde, loss_ic, loss_bc = compute_loss(model, data, config, device)
+        except Exception as e:
+            print(f"Erro ao calcular loss na época {epoch}: {e}")
+            raise
+
+        if not torch.isfinite(total_loss):
+            print(f"Loss não finita detectada na época {epoch}: {total_loss}")
+            break
+
         total_loss.backward()
         optimizer.step()
-        
+
         scheduler.step(total_loss)
-        
+
         history.append([epoch, total_loss.item(), loss_pde, loss_ic, loss_bc])
 
-        if epoch % 100 == 0:
+        # Atualiza barra e prints com menos frequência
+        if epoch % getattr(config, 'LOG_EVERY', 50) == 0:
             pbar.set_postfix({
                 'Loss': f'{total_loss.item():.2e}',
                 'PDE': f'{loss_pde:.2e}',
@@ -95,6 +106,15 @@ def run_training(config):
                 'LR': f'{optimizer.param_groups[0]["lr"]:.1e}'
             })
 
+        # Checkpoint intermediário
+        if (epoch + 1) % ckpt_every == 0:
+            try:
+                save_model(model, config, suffix=f"epoch{epoch+1}")
+                print(f"Checkpoint salvo na época {epoch+1}")
+            except Exception as e:
+                print(f"Falha ao salvar checkpoint na época {epoch+1}: {e}")
+
+        # Atualiza melhor modelo
         if total_loss.item() < best_loss:
             best_loss = total_loss.item()
             save_model(model, config)

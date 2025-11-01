@@ -19,7 +19,7 @@ C_GRAD_Y = 0.3
 
 # --- Parâmetros de Treinamento ---
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-LEARNING_RATE = 1e-3
+LEARNING_RATE = 1e-4
 EPOCHS = 30000 # Problemas 2D são mais difíceis, podem precisar de mais
 # Número de pontos (aumentado para o domínio 3D)
 N_IC = 1000   # Pontos de Condição Inicial (t=0)
@@ -33,10 +33,10 @@ N_PDE = 20000 # Pontos de Colocação (resíduo da PDE)
 LAYERS = [3, 40, 40, 40, 40, 1]
 
 # --- Pesos da Loss Function ---
-W_PDE = 1.0
+W_PDE = 50.0
 W_IC_U = 1.0
-W_IC_V = 0.1
-W_BC = 1.0
+W_IC_V = 50.0
+W_BC = 5.0
 
 # --- Caminhos de Saída ---
 SAVE_PATH = "resultados/simulacao_2d/"
