@@ -77,6 +77,59 @@ def plot_wave_snapshots_2d(model, config, device, times=[0.0, 0.25, 0.5, 0.75], 
     plt.close()
     print(f"Plot de snapshots 2D salvo em: {save_path}")
 
+def plot_wave_surface_3d(model, config, device, t_val, filename="surface_3d.png"):
+    """
+    Plota a superfície 3D do deslocamento u(x,y,t) em um tempo t_val específico.
+    """
+    model.eval()
+    
+    # Usa resolução do grid do config ou fallback para 100 pontos
+    x_res = getattr(config, 'N_X', None) or getattr(config, 'GRID_NX', None) or 100
+    y_res = getattr(config, 'N_Y', None) or getattr(config, 'GRID_NY', None) or x_res
+    x = torch.linspace(config.X_BOUNDS[0], config.X_BOUNDS[1], int(x_res), device=device)
+    y = torch.linspace(config.Y_BOUNDS[0], config.Y_BOUNDS[1], int(y_res), device=device)
+    X, Y = torch.meshgrid(x, y, indexing='xy')
+    T = torch.full_like(X, float(t_val), device=device)
+    
+    grid_input = torch.stack((X.flatten(), Y.flatten(), T.flatten()), dim=1).to(device)
+    
+    with torch.no_grad():
+        u_pred = model(grid_input).cpu().numpy().reshape(X.cpu().numpy().shape)
+    
+    X_np = X.cpu().numpy()
+    Y_np = Y.cpu().numpy()
+    U_np = u_pred
+
+    # Calcula limites para colormap (autoscaling ou use os limites do pulso inicial)
+    vmin = getattr(config, 'PLOT_VMIN', float(np.min(U_np)))
+    vmax = getattr(config, 'PLOT_VMAX', float(np.max(U_np)))
+
+    fig = plt.figure(figsize=(12, 8))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # Plotagem da superfície
+    surf = ax.plot_surface(X_np, Y_np, U_np, cmap='seismic',
+                          linewidth=0, antialiased=True,
+                          vmin=vmin, vmax=vmax,
+                          alpha=0.9)  # leve transparência para melhor visualização
+    
+    ax.set_xlabel('Posição (x)')
+    ax.set_ylabel('Posição (y)')
+    ax.set_zlabel('Deslocamento u(x,y,t)')
+    ax.set_title(f'Superfície da Onda 2D em t = {t_val:.2f} s')
+    
+    # Ajusta a vista para melhor visualização
+    ax.view_init(elev=25, azim=45)
+    
+    # Adicionar barra de cores
+    fig.colorbar(surf, shrink=0.5, aspect=5,
+                 label=f'Deslocamento u(x,y,t) [min={vmin:.2e}, max={vmax:.2e}]')
+    
+    plt.tight_layout()
+    save_path = os.path.join(config.PLOT_PATH, filename)
+    plt.savefig(save_path, dpi=150, bbox_inches='tight')
+    plt.close()
+    print(f"Plot de superfície 3D salvo em: {save_path}")
 
 def plot_loss_history(history_df, config, filename="loss_history.png"):
     """

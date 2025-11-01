@@ -97,7 +97,7 @@ def run_training(config):
         history.append([epoch, total_loss.item(), loss_pde, loss_ic, loss_bc])
 
         # Atualiza barra e prints com menos frequência
-        if epoch % getattr(config, 'LOG_EVERY', 50) == 0:
+        if epoch % 100 == 0:
             pbar.set_postfix({
                 'Loss': f'{total_loss.item():.2e}',
                 'PDE': f'{loss_pde:.2e}',
@@ -107,7 +107,7 @@ def run_training(config):
             })
 
         # Checkpoint intermediário
-        if (epoch + 1) % ckpt_every == 0:
+        if epoch % 100 == 0:
             try:
                 save_model(model, config, suffix=f"epoch{epoch+1}")
                 print(f"Checkpoint salvo na época {epoch+1}")
