@@ -2,7 +2,7 @@
 
 Este projeto é uma implementação de **Redes Neurais Informadas pela Física (PINNs)** para simular a **Equação da Onda 1D e 2D**. O objetivo é explorar como as PINNs podem ser usadas para modelar a propagação de ondas em cenários com velocidades constantes e variáveis.
 
-## 🌟 Sumário Visual
+## Sumário Visual
 
 Abaixo estão alguns exemplos dos resultados gerados pelos modelos treinados.
 
@@ -12,7 +12,7 @@ Abaixo estão alguns exemplos dos resultados gerados pelos modelos treinados.
 **Simulação 2D (Velocidade Variável):**
 ![Propagação da Onda 2D em 3D](resultados/simulacao_2d/plots/wave_surface_3d_t0.50.png)
 
-## 🚀 Instalação
+## Instalação
 
 Siga os passos abaixo para configurar o ambiente de desenvolvimento.
 
@@ -39,7 +39,7 @@ Siga os passos abaixo para configurar o ambiente de desenvolvimento.
     pip install -r requirements.txt
     ```
 
-## 💻 Como Usar
+## Como Usar
 
 Você pode treinar os modelos e executar as simulações usando os scripts principais. Os parâmetros de cada simulação são controlados pelos arquivos na pasta `config/`.
 
@@ -62,7 +62,7 @@ Use main_2d.py para simulações 2D:
 python main_2d.py --config config/config_2d_variavel.py
 ```
 
-## 📊 Resultados e Análise
+## Resultados e Análise
 
 Os resultados de cada execução são salvos automaticamente na pasta resultados/, organizados pelo nome da configuração utilizada (ex: resultados/constante/).
 
@@ -80,7 +80,7 @@ Para uma análise mais detalhada da performance do modelo, você pode utilizar o
 jupyter notebook notebooks/avaliacao_modelo.ipynb
 ```
 
-## 📂 Estrutura do Projeto
+## Estrutura do Projeto
 
 ├── config/         # Arquivos de configuração para diferentes simulações
 ├── notebooks/      # Jupyter Notebooks para análise, como avaliacao_modelo.ipynb
